@@ -1,0 +1,43 @@
+# services:
+#   - type: web
+#     name: your-app-name
+#     env: python
+#     buildCommand: "./build.sh"
+#     startCommand: "gunicorn floorgen.wsgi:application" 
+#     envVars:
+#       - key: PYTHON_VERSION
+#         value: 3.10.16
+#     plan: starter # Choose an appropriate plan with enough memory
+
+
+# services:
+#   - type: web
+#     name: django-floorgen
+#     env: python
+#     buildCommand: pip install -r requirements.txt
+#     startCommand: gunicorn floorgen.wsgi:application
+#     envVars:
+#       - key: DJANGO_SETTINGS_MODULE
+#         value: floorgen.settings
+#       - key: SECRET_KEY
+#         value: your-secret-key
+#       - key: DEBUG
+#         value: false
+#       - key: ALLOWED_HOSTS
+#         value: .onrender.com
+
+services:
+  - type: web
+    name: django-floorgen
+    env: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn floorgen.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: floorgen.settings
+      - key: SECRET_KEY
+        value: "django-insecure-%77r#r7m7to36@z%6p%0d-kf)@0po#!9o+p6^$(2*dy28m8$&5"  # Replace this with your actual secret key or set it in the Render dashboard
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
