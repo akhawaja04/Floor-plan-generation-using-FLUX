@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logout Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #0f172a;
+      color: white;
+    }
+    .parallax-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(29, 78, 216, 0.15) 0%, transparent 80%);
+    }
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0% { transform: translate(0, 0px); }
+      50% { transform: translate(0, 15px); }
+      100% { transform: translate(0, 0px); }
+    }
+    .backdrop-blur {
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 min-h-screen">
+  <!-- Floating Background Elements -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-10 w-64 h-64 bg-blue-500 bg-opacity-10 rounded-full blur-3xl floating"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 bg-opacity-10 rounded-full blur-3xl floating" style="animation-delay: -1.5s"></div>
+  </div>
+  
+  <div class="parallax-bg"></div>
+  
+  <!-- Logout Confirmation -->
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-md">
+      <div class="bg-white bg-opacity-5 backdrop-blur rounded-2xl p-8 border border-white border-opacity-10 text-center">
+        <h2 class="text-2xl font-bold text-white mb-4">Logging Out</h2>
+        <p class="text-white text-opacity-80 mb-8">Are you sure you want to log out?</p>
+        
+        <div class="space-y-4">
+          <a href="imagegen/test.html" class="block w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+            Stay Logged In
+          </a>
+          <a href="{% url 'login' %}" class="block w-full bg-white bg-opacity-10 text-white py-2 rounded-lg font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+            Log Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

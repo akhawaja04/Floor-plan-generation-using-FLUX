@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #0f172a;
+      color: white;
+    }
+    .parallax-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(29, 78, 216, 0.15) 0%, transparent 80%);
+    }
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0% { transform: translate(0, 0px); }
+      50% { transform: translate(0, 15px); }
+      100% { transform: translate(0, 0px); }
+    }
+    .backdrop-blur {
+      backdrop-filter: blur(10px);
+    }
+    .password-strength {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .strength-segment {
+      height: 4px;
+      flex: 1;
+      border-radius: 9999px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .strength-segment.active {
+      background: linear-gradient(to right, #3B82F6, #8B5CF6);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 min-h-screen">
+
+  <!-- Floating Background Elements -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-10 w-64 h-64 bg-blue-500 bg-opacity-10 rounded-full blur-3xl floating"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 bg-opacity-10 rounded-full blur-3xl floating" style="animation-delay: -1.5s"></div>
+  </div>
+
+  <div class="parallax-bg"></div>
+
+  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+      <div class="bg-white bg-opacity-5 backdrop-blur rounded-2xl p-8 border border-white border-opacity-10">
+
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Create an Account</h2>
+
+        {% if messages %}
+          <div class="mb-4">
+            {% for message in messages %}
+              <div class="text-sm text-green-400">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-5">
+          {% csrf_token %}
+          {% for field in form %}
+            <div>
+              <label class="block text-sm font-medium text-white text-opacity-80 mb-2">
+                {{ field.label }}
+              </label>
+              {{ field }}
+              {% if field.errors %}
+                <p class="text-sm text-red-400 mt-1">{{ field.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+          >
+            Register
+          </button>
+        </form>
+
+        <p class="mt-4 text-center text-sm text-white text-opacity-60">
+          Already have an account?
+          <a href="{% url 'login' %}" class="text-blue-400 hover:text-blue-300 transition-colors">
+            Login
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

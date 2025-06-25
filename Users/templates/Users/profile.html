@@ -1,0 +1,91 @@
+{% extends "Users/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto my-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white dark:bg-gray-900 shadow-2xl rounded-3xl border border-gray-200 dark:border-gray-700 p-8 relative overflow-hidden">
+        <!-- Gradient Accent -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+        
+        <!-- Profile Header -->
+        <div class="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 mt-4">
+            <!-- Profile Image -->
+            <div class="relative group">
+                <img class="w-36 h-36 rounded-full border-4 border-indigo-500 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105" 
+                     src="{{ user.profile.profile_image.url }}" 
+                     alt="{{ user.username }}'s Profile Image">
+                <div class="absolute bottom-0 right-0 bg-indigo-500 rounded-full p-2 shadow-md">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- User Details -->
+            <div class="text-center sm:text-left">
+                <h2 class="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{{ user.username }}</h2>
+                <p class="mt-2 text-base text-gray-600 dark:text-gray-400">{{ user.email }}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-500">
+                    Member since {{ user.date_joined|date:"F Y" }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="mt-8">
+            <button id="toggleFormBtn" 
+                    class="py-3 px-6 border border-transparent rounded-lg shadow-md text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-105">
+                Edit Profile
+            </button>
+        </div>
+
+        <!-- Form Section (Hidden by Default) -->
+        <form id="profileForm" method="POST" enctype="multipart/form-data" class="mt-10 space-y-6 hidden">
+            {% csrf_token %}
+            <div class="space-y-8">
+                <!-- User Form -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-all duration-300">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Account Details</h3>
+                    {{ u_form|crispy }}
+                </div>
+                <!-- Profile Form -->
+                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-sm transition-all duration-300">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Profile Settings</h3>
+                    {{ p_form|crispy }}
+                </div>
+            </div>
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-4">
+                <button type="button" id="cancelBtn" 
+                        class="py-3 px-6 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-base font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript for Toggling Form -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const profileForm = document.getElementById('profileForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        toggleFormBtn.addEventListener('click', function() {
+            profileForm.classList.toggle('hidden');
+            toggleFormBtn.textContent = profileForm.classList.contains('hidden') ? 'Edit Profile' : 'Hide Form';
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            profileForm.classList.add('hidden');
+            toggleFormBtn.textContent = 'Edit Profile';
+        });
+    });
+</script>
+{% endblock content %}

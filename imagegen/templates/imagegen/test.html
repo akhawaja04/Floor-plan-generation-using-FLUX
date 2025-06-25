@@ -1,0 +1,316 @@
+{% load static %}
+{% load tailwind_tags %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FloorGenAI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Space Grotesk", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+    <style>
+      body {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .parallax-bg {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(29, 78, 216, 0.15) 0%,
+          transparent 80%
+        );
+      }
+      .floating {
+        animation: floating 3s ease-in-out infinite;
+      }
+      @keyframes floating {
+        0% {
+          transform: translate(0, 0px);
+        }
+        50% {
+          transform: translate(0, 15px);
+        }
+        100% {
+          transform: translate(0, 0px);
+        }
+      }
+      .gradient-border {
+        background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        border-radius: 9999px;
+        padding: 1px;
+      }
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeIn 0.8s forwards;
+      }
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .delay-200 {
+        animation-delay: 0.2s;
+      }
+      .delay-400 {
+        animation-delay: 0.4s;
+      }
+      .delay-600 {
+        animation-delay: 0.6s;
+      }
+      .delay-800 {
+        animation-delay: 0.8s;
+      }
+
+    </style>
+  </head>
+  <body class="min-h-screen bg-slate-900 overflow-x-hidden antialiased">
+    <nav class="navbar fixed w-full px-6 py-4 z-50 ml-20">
+      <div
+        class="max-w-7xl mt-4 backdrop-blur-md bg-white/10 px-8 py-4 rounded-[20px] border border-white/10"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+          <img src={%static 'imagegen/assets/blue_logo.png' %} class="w-8 h-8" alt="icon" />
+            <a href="{% url 'imagegen-home' %}">
+
+              <span class="text-white text-xl font-semibold">FloorGen AI</span>
+            </a>
+          </div>
+          <div class="hidden md:flex items-center space-x-8">
+            {% comment %} <a
+              href="#features"
+              class="text-white/80 hover:text-white transition-colors"
+              >Gallery</a
+            >
+            <a
+              href="{% url 'imagegen-about' %}"
+              class="text-white/80 hover:text-white transition-colors"
+              >About Us</a
+            > {% endcomment %}
+            <div class="flex space-x-4">
+              {% if user.is_authenticated %}
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <a href="{% url 'login' %}">
+                  <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                    Logout
+                  </button>
+              </form>
+             <a href="{% url 'profile' %}">
+                <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">Profile</button>
+              </a>
+            {% else %}
+            <a href="{% url 'login' %}">
+              <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                Login
+              </button>
+            </a> 
+              <div class="gradient-border">
+                <a href="register">
+                  <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">
+                    Sign Up
+                  </button>
+                </a>
+            {% endif %}
+                </div>
+              </div>
+              
+              
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="parallax-bg"></div>
+
+    <!-- Floating 3D Shapes -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+      <div
+        class="absolute top-20 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl floating"
+      ></div>
+      <div
+        class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl floating"
+        style="animation-delay: -1.5s"
+      ></div>
+    </div>
+
+    <!-- Transparent Navbar -->
+    
+    <!-- Hero Section -->
+    <div class="pt-32 pb-20 px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="space-y-8">
+            <h1
+              class="fade-in delay-200 text-5xl lg:text-6xl font-bold text-white leading-tight"
+            >
+              Transform Your Ideas Into
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400"
+                >Floorplans</span
+              >
+              With AI
+            </h1>
+            <p class="fade-in delay-400 text-lg text-white/80">
+              Experience the future of architectural design. Create professional
+              floor plans instantly with our AI-powered platform. Perfect for
+              architects, designers, and homeowners.
+            </p>
+            <div class="fade-in delay-600 flex flex-col sm:flex-row gap-4">
+              <button
+            class="group bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full font-medium hover:opacity-90 transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
+          >
+            <a href="{% url 'imagegen-main' %}"><span>Generate Your Floorplan</span></a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
+
+              <button
+                class="bg-white/10 text-white px-8 py-3 rounded-full font-medium hover:bg-white/20 transition-colors border border-white/10 hover:scale-105"
+              >
+              <a href="{% url 'gallery' %}"><span>View Gallery</span></a>
+                
+              </button> 
+            </div>
+            <div class="fade-in delay-800 grid grid-cols-3 gap-4 pt-4">
+              <div
+                class="flex items-center gap-2 bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 text-blue-400"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                <span class="text-white/80 text-sm">Instant Generation</span>
+              </div>
+              <div
+                class="flex items-center gap-2 bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 text-blue-400"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span class="text-white/80 text-sm">Collaborative Design</span>
+              </div>
+              <div
+                class="flex items-center gap-2 bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 text-blue-400"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"
+                  />
+                  <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+                  <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+                </svg>
+                <span class="text-white/80 text-sm">Vector Export</span>
+              </div>
+            </div>
+          </div>
+            <div class="relative bg-transparent text-white py-8">
+                <div class="grid grid-cols-1 gap-6 fade-in delay-400">
+                
+                <!-- Interactive 3D Model -->
+                <div class="relative max-w-5xl mx-auto w-full h-[500px]  ">
+                    
+                    <!-- Glow Effect -->
+                    
+                    
+                    <!-- 3D Model Viewer -->
+                    <model-viewer 
+                    src="{% static 'imagegen/models/modern_home.glb' %}" 
+                    alt="A 3D floor plan model"
+                    auto-rotate 
+                    camera-controls 
+                    ar 
+                    background-color="#1e293b"
+                    style="width: 100%; height: 100%; position: relative; z-index: 10; background-color: transparent;"
+                    >
+                    </model-viewer>
+                    
+                </div>
+                
+                </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    {% comment %}
+    <script src="{% static 'imagegen/js/script.js' %}"></script>
+    {% endcomment %}
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="{% static 'imagegen/js/home.js' %}"></script> {% endcomment %}
+  </body>
+</html>

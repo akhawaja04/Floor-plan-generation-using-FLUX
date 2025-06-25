@@ -1,0 +1,387 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLOORNGENAΙ - Floor Plan Generator</title>
+  <!-- Font Awesome CDN (add only once in your existing HTML head) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+  <link rel="stylesheet" type="text/css" href="{% static 'imagegen/styles.css' %}">
+  <!-- Add in your HTML head -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  scale: {
+                      '102': '1.02',
+                  }
+              }
+          }
+      }
+  </script>
+</head>
+<body>
+  <nav class="navbar fixed w-full px-6 py-4 z-50 ml-20">
+      <div
+        class="max-w-7xl  backdrop-blur-md bg-white/10 px-8 py-4 rounded-[20px] border border-white/10"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+          <img src={%static 'imagegen/assets/blue_logo.png' %} class="w-8 h-8" alt="icon" />
+
+            <span class="text-white text-xl font-semibold">FloorGen AI</span>
+          </div>
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="{% url 'gallery' %}"
+              class="text-white/80 hover:text-white transition-colors"
+              >Gallery</a
+            >
+            <a
+              href="{% url 'imagegen-about' %}"
+              class="text-white/80 hover:text-white transition-colors"
+              >About Us</a
+            >
+            <div class="flex space-x-4">
+              {% if user.is_authenticated %}
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <a href="{% url 'login' %}">
+                  <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                    Logout
+                  </button>
+              </form>
+             <a href="{% url 'profile' %}">
+                <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">Profile</button>
+              </a>
+            {% else %}
+            <a href="{% url 'login' %}">
+              <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                Login
+              </button>
+            </a> 
+              <div class="gradient-border">
+                <a href="register">
+                  <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">
+                    Sign Up
+                  </button>
+                </a>
+            {% endif %}
+                </div>
+              </div>
+              
+              
+          </div>
+        </div>
+      </div>
+    </nav>
+
+  <div class="container">
+    <!-- Header -->
+    
+    <!-- Main content -->
+    <div class="content">
+      <!-- Floor plans section -->
+      <div class="floor-plans w-full h-[600px] mt-[100px] overflow-y-auto">
+        <div class="flex flex-wrap gap-3 ml-14 text-sm">
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: lightcoral;"></div>
+            <span>Kitchen</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: palegoldenrod;"></div>
+            <span>Living Room</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: orange;"></div>
+            <span>Common Room</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: OliveDrab;"></div>
+            <span>Balcony</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: gold;"></div>
+            <span>Master Room</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: skyblue;"></div>
+            <span>Bathroom</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-6 h-6 rounded-full border border-gray-500 mr-2" style="background-color: Orchid;"></div>
+            <span>Storage</span>
+          </div>
+        </div>
+      
+        <div class="preview-container" id="preview-container">
+          <div class="preview-grid">
+              <!-- Images will be dynamically inserted here -->
+          </div>
+          <div class="generation-status"><h3></h3>Waiting for your input...</div>
+        </div>
+        <div class="download-btn-container">
+          <input type="hidden" id="selectedImageUrl" value="">
+
+          <button class="download-btn" data-format="png">Download PNG</button>
+          <button class="download-btn" data-format="dxf">Download Vector</button>
+          <button class="download-btn" data-format="redirect">Open in LibreCAD</button>
+        </div>
+      </div>
+    
+      <div class="mt-28 inline-block h-20 relative cursor-pointer" id="eye-container">
+        <!-- Eye Icon -->
+        <i id="eye-icon" class="fas fa-eye text-gray-600 text-xl transition-transform duration-300 hover:scale-105"></i>
+      
+        <!-- Floating Image Box (initially hidden) -->
+        <div id="preview-box" class="absolute top-0 right-[calc(100%+12px)] z-50 hidden">
+          <div class="relative">
+            <!-- Close Icon -->
+            <button
+              id="close-btn"
+              class="absolute top-1 right-1 bg-black text-white rounded-full p-1 hover:bg-red-500 w-6 h-6 flex items-center justify-center"
+            >
+              <i class="fas fa-times text-sm"></i>
+            </button>
+      
+            <!-- Image -->
+            <img
+              src="{% static 'imagegen/gallery/sroomchart.png' %}"
+              alt="Preview"
+              class="w-[500px] max-w-none rounded-lg shadow-lg border border-gray-300"
+            />
+          </div>
+        </div>
+      </div>
+      
+      
+      {% comment %} <div class="mt-28 relative group inline-block cursor-pointer">
+        <!-- Eye Icon -->
+        <i class="fas fa-eye text-gray-600 text-xl transition-transform duration-300 group-hover:scale-105"></i>
+      
+        <!-- Floating Image -->
+        <div class="absolute top-0 left-10 z-50 hidden group-hover:block">
+          <img 
+            src="{% static 'imagegen/gallery/1663.png' %}" 
+            alt="Preview"
+            class="w-[500px] max-w-none rounded-lg shadow-lg border border-gray-300"
+          />
+        </div>
+      </div> {% endcomment %}
+      
+      
+      
+      <!-- Room configuration panel -->
+      <div class="room-panel">
+        <h2 class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Room Configuration</h2>
+        <small class="block text-center text-sm text-gray-300  italic">
+          Enter specifications for each room
+        </small>
+                
+          <form id="roomConfigForm">
+            {% csrf_token %}
+            <!-- Master room -->
+            <div class="room-item">
+              <div class="room-name">
+                Master Room
+                <span class="room-color" style="background-color: gold;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="master_room_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" id="ratioInput" name="master_room_ratio" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$"
+  title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Bathroom -->
+            <div class="room-item">
+              <div class="room-name">
+                Bathroom
+                <span class="room-color" style="background-color:skyblue;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="bathroom_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" id="ratioInput" name="bathroom_ratio" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Living Room -->
+            <div class="room-item">
+              <div class="room-name">
+                Living Room
+                <span class="room-color" style="background-color: palegoldenrod;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="living_room_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" name="living_room_ratio" id="ratioInput" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Kitchen -->
+            <div class="room-item">
+              <div class="room-name">
+                Kitchen
+                <span class="room-color" style="background-color: lightcoral;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="kitchen_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" name="kitchen_ratio" class="room-input" id="ratioInput" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Balcony -->
+            <div class="room-item">
+              <div class="room-name">
+                Balcony
+                <span class="room-color" style="background-color: OliveDrab;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="balcony_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" name="balcony_ratio" id="ratioInput" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Common Room -->
+            <div class="room-item">
+              <div class="room-name">
+                Common Room
+                <span class="room-color" style="background-color: orange;"></span>
+              </div>
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" name="common_room_area" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" name="common_room_ratio" id="ratioInput" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom rooms will be added here -->
+            <div id="customRoomsContainer"></div>
+            
+            <!-- Add new room form -->
+            <div id="newRoomForm" class="new-room-container">
+              <div class="room-name">New Room</div>
+              
+              <div class="new-room-input-group">
+                <div class="input-label">Name:</div>
+                <select id="newRoomName" class="room-input">
+                  <option value="Kitchen" selected>Kitchen</option>
+                  <option value="Common Room">Common Room</option>
+                  <option value="Balcony">Balcony</option>
+                  <option value="Master Room">Master Room</option>
+                  <option value="Bathroom">Bathroom</option>
+                  <option value="Storage">Storage</option>
+                </select>
+                <button type="button" class="cancel-btn" onclick="cancelNewRoom()">×</button>
+              </div>
+              
+              <div class="room-inputs">
+                <div class="input-group">
+                  <div class="input-label">Area</div>
+                  <input type="number" id="newRoomArea" class="room-input" placeholder="sqft" min="5" 
+                  max="500" 
+                  step="1">
+                </div>
+                <div class="input-group">
+                  <div class="input-label">Ratio</div>
+                  <input type="text" id="newRoomRatio" class="room-input" placeholder="width:length" pattern="^\d{1,2}:\d{1,2}$" title="Enter ratio like 4:5 or 11:10">
+                </div>
+              </div>
+              
+              <button type="button" class="add-room-btn" onclick="confirmAddRoom()">
+                <span class="add-icon">✓</span>
+                Add Room
+              </button>
+            </div>
+            
+            <button type="button" class="add-room-btn" onclick="showNewRoomForm()">
+              <span class="add-icon">+</span>
+              Add Custom Room
+            </button>
+            
+            <div class="generate-btn-container">
+              <button id="generateBtn" type="submit" class="generate-btn">Generate Floor Plan</button>
+            </div>
+          </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <div id="loadingPercentage" class="percentage">0%</div>
+    </div>
+    <div id="loadingText" class="loading-text">Generating image...</div>
+  </div>
+  
+  
+  <!-- Toast notification -->
+  <div id="toast" class="toast">Notification message</div>
+
+  <script>
+    const eyeIcon = document.getElementById('eye-icon');
+    const previewBox = document.getElementById('preview-box');
+    const closeBtn = document.getElementById('close-btn');
+  
+    eyeIcon.addEventListener('mouseenter', () => {
+      previewBox.classList.remove('hidden');
+    });
+  
+    closeBtn.addEventListener('click', () => {
+      previewBox.classList.add('hidden');
+    });
+  </script>
+  
+  <script src="{% static 'imagegen/js/script.js' %}"></script>
+</body>
+</html>

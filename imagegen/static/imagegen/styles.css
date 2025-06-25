@@ -1,0 +1,758 @@
+
+.preview-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+/* Added */
+.image-preview-popup {
+  position: absolute;
+  border: 2px solid #fff;
+  background-color: #fff;
+  z-index: 999;
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: none;
+  transition: all 0.3s ease;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 4px;
+}
+
+.image-preview-popup img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/*  */
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(256px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+@media (min-width: 640px) {
+    .preview-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 120px));
+    }
+}
+
+/* Add smooth animation for hover states */
+.transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.hover\:scale-102:hover {
+    transform: scale(1.02);
+}
+
+/* Add animation for loading spinner */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive grid based on number of images */
+.preview-grid.images-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.preview-grid.images-3 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.preview-grid.images-4 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.preview-grid.images-5 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.preview-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 75%; /* 4:3 aspect ratio */
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.preview-image:hover {
+    transform: scale(1.05);
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+    .preview-grid.images-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .preview-grid.images-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .preview-grid.images-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+/* Loading animation container */
+.preview-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Gradient animation for loading state */
+.loading-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(165, 243, 252, 0.3),
+        rgba(34, 211, 238, 0.6),
+        rgba(125, 211, 252, 0.3)
+    );
+    background-size: 200% 100%;
+    animation: gradient 2s linear infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loading-gradient.active {
+    opacity: 1;
+}
+
+/* Pulse animation for the container */
+.preview-container.generating {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animation keyframes */
+@keyframes gradient {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Generation status text */
+.generation-status {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #dee4f3;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.generation-status.active {
+    opacity: 1;
+}
+
+/* Preview image styles */
+#preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#preview-image.generating {
+    opacity: 0.5;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  /* min-height: 100vh; */
+  padding: 20px;
+  color: white;
+  background: linear-gradient(to top, rgba(32, 29, 90, 0.8), #081b56);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header styles */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+/* 
+nav a button {
+  position: relative;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 0;
+  transition: color 0.3s ease-in-out;
+}
+
+nav a button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background-color: white;
+  transition: width 0.3s ease-in-out;
+}
+
+nav a button:hover::after {
+  width: 100%;
+}
+
+
+nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  nav {
+    display: flex;
+    gap: 30px;
+  }
+  
+  nav button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  
+}
+
+.login-btn, .logout-btn, .register-btn, .profile-btn {
+  background: linear-gradient(to bottom, #30c8c8, #167e7e);
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  padding: 8px 15px;
+}
+
+.button-container {
+  display: flex;
+  gap: 15px; /* Controls button spacing 
+} 
+*/
+/* Main content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (min-width: 992px) {
+  .content {
+    flex-direction: row;
+  }
+}
+
+/* Floor plans section */
+.floor-plans {
+  flex: 1;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.plan-item {
+  background: white;
+  border-radius: 24px;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.plan-item:hover {
+  transform: scale(1.05);
+}
+
+.plan-item.selected {
+  border: 3px solid #30c8c8;
+}
+
+.plan-box {
+  width: 120px;
+  height: 120px;
+  border: 2px solid black;
+  position: relative;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  position: absolute;
+  inset: 0;
+}
+
+.plan-cell:nth-child(1) {
+  background-color: #fef08a;
+  border: 1px solid black;
+}
+
+.plan-cell:nth-child(2) {
+  background-color: #fb923c;
+  border: 1px solid black;
+}
+
+.plan-cell:nth-child(3) {
+  background-color: #bae6fd;
+  border: 1px solid black;
+}
+
+.plan-cell:nth-child(4) {
+  background-color: #fda4af;
+  border: 1px solid black;
+}
+
+.preview-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.preview-image-container {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.download-btn-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-left: 154px;
+}
+
+/* .download-btn, .redirect-btn {
+  background: linear-gradient(to bottom, #30c8c8, #167e7e);
+  border: none;
+  color: white;
+  padding: 8px 24px;
+  border-radius: 6px;
+  margin-top: 120px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+} */
+.download-btn, .redirect-btn {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6); /* Tailwind's blue-500 to purple-500 */
+  color: white;
+  padding: 12px 32px; /* same as px-8 py-3 */
+  border: none;
+  border-radius: 9999px; /* same as rounded-full */
+  font-weight: 500; /* font-medium */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* space-x-2 */
+  cursor: pointer;
+  transition: all 0.6s ease; /* smooth hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* similar to shadow-md */
+}
+
+.download-btn:hover, .redirect-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4); /* blue-500 glow on hover */
+}
+
+/* .download-btn:hover,.redirect-btn:hover {
+  opacity: 1;
+  box-shadow: 0 6px 12px rgba(171, 42, 42, 1); /* slightly deeper on hover */
+ 
+
+
+.prompt-input {
+  background-color: rgba(32, 178, 170, 0.3);
+  border-radius: 9999px;
+  padding: 8px;
+  margin-bottom: 30px;
+}
+
+.prompt-input input {
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  font-size: 16px;
+}
+
+.prompt-input input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Room configuration panel */
+.room-panel {
+  width: 100%;
+  background-color: rgba(99, 102, 136, 0.2);
+  border-radius: 5px;
+  padding: 24px;
+  backdrop-filter: blur(4px); 
+  max-height: 600px;  /* Adjust the height as needed */
+  overflow-y: auto;   /* Enables vertical scrolling */
+  border: 1px solid #ccc;
+  margin-top: 120px;
+  
+}
+
+/* Custom Scrollbar Styling */
+.room-panel::-webkit-scrollbar {
+    width: 8px; /* Width of scrollbar */
+    
+    border-radius: 13px; /* Rounds the scrollbar itself */
+}
+
+/* Scrollbar track (background) */
+.room-panel::-webkit-scrollbar-track {
+    background:#d3ebee; /* Light gray */
+    border-radius: 13px; /* Rounds the scrollbar track */
+    
+}
+
+/* Scrollbar thumb (the draggable part) */
+.room-panel::-webkit-scrollbar-thumb {
+    background: #888; /* Darker gray */
+    border-radius: 13px; /* Rounded corners */
+}
+
+/* Hover effect for scrollbar thumb */
+.room-panel::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Even darker on hover */
+}
+@media (min-width: 992px) {
+  .room-panel {
+    width: 360px;
+  }
+}
+
+.room-item {
+  margin-bottom: 24px;
+}
+
+.room-name {
+  font-size: 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.room-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.room-inputs {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.input-group {
+  flex: 1;
+}
+
+.input-label {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.room-input {
+  background-color: rgba(90, 98, 111, 0.5);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  width: 100%;
+}
+
+.new-room-container {
+  display: none;
+  margin-bottom: 24px;
+}
+
+.new-room-container.active {
+  display: block;
+}
+
+.new-room-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cancel-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-room-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.add-room-btn:hover {
+  text-decoration: underline;
+}
+
+.add-icon {
+  background-color: #9995b8;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.generate-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+
+}
+
+.generate-btn {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6); /* Tailwind's blue-500 to purple-500 */
+  border: none;
+  color: white;
+  padding: 12px 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(51, 30, 190, 0.8); /* Tailwind's shadow-md */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.spinner-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5129ac;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.percentage {
+  position: absolute;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.loading-text {
+  margin-top: 15px;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* .loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5129ac;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} */
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast.success {
+  background-color: #10b981;
+  color: white;
+}
+
+.toast.error {
+  background-color: #ef4444;
+  color: white;
+}

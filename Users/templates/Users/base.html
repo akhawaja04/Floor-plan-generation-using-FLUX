@@ -1,0 +1,147 @@
+{% load static %}
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Space Grotesk", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background-color: #121212;
+      color: white;
+    }
+    .parallax-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(29, 78, 216, 0.15) 0%, transparent 80%);
+    }
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0% {
+        transform: translate(0, 0px);
+      }
+      50% {
+        transform: translate(0, 15px);
+      }
+      100% {
+        transform: translate(0, 0px);
+      }
+    }
+    .gradient-border {
+      background: linear-gradient(to right, #3b82f6, #8b5cf6);
+      border-radius: 9999px;
+      padding: 1px;
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.8s forwards;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+    .delay-400 {
+      animation-delay: 0.4s;
+    }
+    .delay-600 {
+      animation-delay: 0.6s;
+    }
+    .delay-800 {
+      animation-delay: 0.8s;
+    }
+    .navbar {
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-900 overflow-x-hidden antialiased">
+  <div class="parallax-bg"></div>
+  <!-- Floating 3D Shapes -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl floating"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl floating" style="animation-delay: -1.5s;"></div>
+  </div>
+  <!-- Transparent Navbar -->
+  <nav class="navbar fixed w-full px-6 py-4 z-50">
+    <div class="max-w-7xl mx-auto backdrop-blur-md bg-white/10 px-8 py-4 rounded-[20px] border border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <img src="{% static 'imagegen/assets/blue_logo.png' %}" alt="Logo" class="w-10 h-10" />
+          <span class="text-white text-xl font-semibold">FloorGen AI</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="{% url 'imagegen-home' %}" class="text-white/80 hover:text-white transition-colors">Home</a>
+          <a href="#" class="text-white/80 hover:text-white transition-colors">Gallery</a>
+          <a href="{% url 'imagegen-about' %}" class="text-white/80 hover:text-white transition-colors">About Us</a>
+          <div class="flex space-x-4">
+            {% if user.is_authenticated %}
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <a href="{% url 'login' %}">
+                  <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                    Logout
+                  </button>
+              </form>
+              <a href="{% url 'profile' %}">
+                <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">Profile</button>
+              </a>
+            {% else %}
+            <a href="{% url 'login' %}">
+              <button class="bg-transparent text-white px-5 py-2 rounded-full font-medium border border-white shadow-md hover:text-blue-400 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 ease-in-out">
+                Login
+              </button>
+            </a> 
+              <div class="gradient-border">
+                <a href="register">
+                  <button class="bg-white text-slate-900 px-5 py-2 rounded-full font-medium shadow-md hover:bg-white/90 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ease-in-out">
+                    Sign Up
+                  </button>
+                </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages Section -->
+  {% if messages %}
+    <div class="container mx-auto mt-20">
+      {% for message in messages %}
+        <div class="fade-in delay-200 p-4 mb-4 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500/20 text-green-300{% elif message.tags == 'error' %}bg-red-500/20 text-red-300{% else %}bg-white/10 text-white{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <div class="pt-28 pb-28">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

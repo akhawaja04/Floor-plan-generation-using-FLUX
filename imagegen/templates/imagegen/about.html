@@ -1,0 +1,81 @@
+{% extends "imagegen/base.html" %}
+{% load static %}
+{% block title %}
+ About
+{% endblock title%}
+
+{% block content %}
+<section class="py-20 px-6 bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Meet Our Team</h2>
+        <p class="text-white/80 max-w-2xl mx-auto">
+          We're a passionate team of AI specialists working together to revolutionize architectural design.
+        </p>
+      </div>
+  
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Team Member 1 -->
+        <div class="group relative">
+          <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+            <div class="relative mb-6">
+              <div class="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl transition-all group-hover:blur-3xl"></div>
+              <img
+                src="{% static 'imagegen/assets/asad1.png' %}"
+                alt="Asad"
+                class="w-36 h-36 rounded-full mx-auto relative z-12"
+              />
+            </div>
+            <h3 class="text-2xl font-bold mb-2">AsadUllah Yousaf</h3>
+            <p class="text-blue-400 mb-4">AI Engineer</p>
+            <p class="text-white/70 mb-6">
+              With over 1 year of experience in AI and architectural design, AsadUllah leads our AI development team and is passionate about integrating innovative technologies into design practices...
+            </p>
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">Machine Learning</span>
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">Computer Vision</span>
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">Image Processing</span>
+            </div>
+            <div class="flex justify-center space-x-4 text-white/60">
+              <a href="https://linkedin.com" target="_blank" class="hover:text-blue-400">LinkedIn</a>
+              <a href="https://twitter.com" target="_blank" class="hover:text-blue-400">Twitter</a>
+              <a href="https://github.com" target="_blank" class="hover:text-blue-400">GitHub</a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Team Member 2 -->
+        <div class="group relative">
+          <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300">
+            <div class="relative mb-6">
+              <div class="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl transition-all group-hover:blur-3xl"></div>
+              <img
+              src="{% static 'imagegen/assets/ismail_profile.png' %}"
+              alt="Muhammad Ismail Tanoli"
+                class="w-32 h-32 rounded-full mx-auto relative z-10"
+              />
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Muhammad Ismail Tanoli</h3>
+            <p class="text-blue-400 mb-4"> AI Engineer </p>
+            <p class="text-white/70 mb-6">
+              Muhammad Ismail, Artificial Intelligence Engineer with expertise in leveraging advanced AI techniques to solve complex problems, optimize processes, and drive data-driven decision-making for impactful business outcomes.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">Model Finetuning</span>
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">Algorithm Design</span>
+              <span class="bg-white/5 text-white/80 px-3 py-1 rounded-full text-sm">AI Integration</span>
+            </div>
+            <div class="flex justify-center space-x-4 text-white/60">
+              <a href="http://www.linkedin.com/in/muhammad-ismail-92a74522a" target="_blank" class="hover:text-blue-400">LinkedIn</a>
+              <a href="https://twitter.com" target="_blank" class="hover:text-blue-400">Twitter</a>
+              <a href="https://github.com/MuhammadIsmailTanoli" target="_blank" class="hover:text-blue-400">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+{% endblock content%}
+
+
